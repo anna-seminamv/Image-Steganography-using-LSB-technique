@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Image Stegnography</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <video autoplay muted loop>
+        <source src="static/bg.mp4" type="video/mp4">
+    </video>
+    <h1>Image Stegnography</h1>
+    <div style="display: flex; justify-content: space-around; margin-top: 50px;">
+
+        <div class="embed">
+            <h2>Embed Message</h2>
+            <form action="/embed" method="post" enctype="multipart/form-data">
+                <label for="embed_image_file">Upload an image file</label>
+                <input type="file" name="image_file" id="embed_image_file" accept=".png, .jpg, .jpeg" required>
+                <br>
+                <label for="secret_message">Enter the secret message:</label>
+                <input type="text" name="secret_message" required>
+                <br>
+                <button type="submit">Embed Message</button>
+            </form>
+        </div>
+         
+        <div class="extract">
+            <h2>Extract Message</h2>
+            <label for="extract_image_file">Upload an image file</label>
+            <input type="file" name="image_file" id="extract_image_file" accept=".png, .jpg, .jpeg" required>
+            <br>
+            <label for="extracted_message">Extracted Message:</label>
+            <input type="text" id="extracted_message" readonly>
+            <br>
+            <button type="button" onclick="extractMessage()">Extract Message</button>
+        </div>
+    </div>
+
+    <script>
+        function extractMessage() {
+            var imageFile = document.getElementById('extract_image_file').files[0];
+            var formData = new FormData();
+            formData.append('image_file', imageFile);
+    
+            fetch('/extract', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.text())
+            .then(data => {
+                if (data === " ") {
+                    alert("No hidden message found");
+                } else {
+                    document.getElementById('extracted_message').value = data;
+                }
+            })
+            .catch(error => console.error('Error:', error));
+        }
+    </script>    
+</body>
+</html>
